@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Online Text Tools</title>
+    <meta name="description" content="A collection of easy-to-use online text tools for manipulating and analyzing text in various ways. Free and user-friendly.">
+    <meta name="keywords" content="text tools, online text editor, text manipulation, text analysis, reverse text, split text, join text">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --accent-color: #007bff;
+            --card-bg: #ffffff;
+            --modal-bg: #ffffff;
+            --shadow-color: rgba(0, 123, 255, 0.2);
+        }
+        .dark {
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --accent-color: #4dabf7;
+            --card-bg: #1e1e1e;
+            --modal-bg: #1e1e1e;
+            --shadow-color: rgba(77, 171, 247, 0.2);
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            padding: 1.5em;
+            text-align: center;
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+        header h1 {
+            margin: 0;
+            font-weight: 600;
+        }
+        #theme-toggle {
+            position: absolute;
+            top: 1.5em;
+            right: 1.5em;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        #theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        #theme-toggle i {
+            color: #ffffff;
+            font-size: 1.2em;
+        }
+        #tools-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 1.5em;
+        }
+        .tool-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            margin: 1em;
+            padding: 1.5em;
+            width: 280px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            display: flex;
+            align-items: center;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px var(--shadow-color);
+        }
+        .tool-icon {
+            font-size: 2em;
+            color: #ffffff;
+            background-color: var(--accent-color);
+            border-radius: 8px;
+            padding: 0.5em;
+            margin-right: 1em;
+            min-width: 50px;
+            text-align: center;
+        }
+        .tool-info {
+            flex: 1;
+        }
+        .tool-card h3 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+        .tool-card p {
+            margin: 0.5em 0 0;
+            font-size: 0.9em;
+            color: #666666;
+        }
+        .dark .tool-card p {
+            color: #cccccc;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: var(--modal-bg);
+            margin: 5% auto;
+            padding: 25px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 900px;
+            box-shadow: 0 4px 20px var(--shadow-color);
+        }
+        .close {
+            color: var(--text-color);
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .close:hover,
+        .close:focus {
+            color: var(--accent-color);
+        }
+        textarea {
+            width: 100%;
+            height: 180px;
+            padding: 1em;
+            box-sizing: border-box;
+            border: 1px solid var(--accent-color);
+            border-radius: 8px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            resize: vertical;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+        }
+        button {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            padding: 0.8em 1.5em;
+            margin: 0.5em 0.5em 0 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s, transform 0.3s;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            .tool-card {
+                width: 45%;
+            }
+            button {
+                margin: 0.5em 0;
+            }
+        }
+        @media (max-width: 480px) {
+            .tool-card {
+                width: 90%;
+                flex-direction: column;
+                text-align: center;
+            }
+            .tool-icon {
+                margin-right: 0;
+                margin-bottom: 1em;
+            }
+            .modal-content {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Easy Online Text Tools</h1>
+        <button id="theme-toggle"><i class="fas fa-moon"></i></button>
+    </header>
+    <div id="tools-container"></div>
+    <div id="tool-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="tool-title"></h2>
+            <p id="tool-description"></p>
+            <textarea id="input-text" placeholder="Enter your text here..."></textarea>
+            <button id="process-btn">Process Text</button>
+            <textarea id="output-text" placeholder="Processed text will appear here..." readonly></textarea>
+            <button id="download-txt">Download as TXT</button>
+            <button id="download-pdf">Download as PDF</button>
+            <button id="download-excel">Download as CSV</button>
+            <button id="download-word">Download as DOC</button>
+        </div>
+    </div>
+    <script>
+        function convertToZigZag(s, numRows = 3) {
+            if (numRows === 1) return s;
+            const rows = Array.from({length: numRows}, () => []);
+            let curRow = 0;
+            let goingDown = false;
+            for (let char of s) {
+                rows[curRow].push(char);
+                if (curRow === 0 || curRow === numRows - 1) goingDown = !goingDown;
+                curRow += goingDown ? 1 : -1;
+            }
+            return rows.map(row => row.join(' ')).join('\n');
+        }
+        const tools = [
+            { name: "Split Text", description: "Quickly split text into chunks. (Splits by spaces into lines)", func: (text) => text.split(/\s+/).join('\n'), icon: "fas fa-cut" },
+            { name: "Join Text", description: "Quickly merge lines of text together via a delimiter. (Joins with comma)", func: (text) => text.replace(/\n/g, ', '), icon: "fas fa-link" },
+            { name: "Repeat Text", description: "Quickly repeat text many times. (Repeats 3 times)", func: (text) => text.repeat(3), icon: "fas fa-redo" },
+            { name: "Reverse Text", description: "Quickly write text backwards.", func: (text) => text.split('').reverse().join(''), icon: "fas fa-undo" },
+            { name: "Truncate Text", description: "Quickly cut text to the given length. (To 50 chars)", func: (text) => text.slice(0, 50), icon: "fas fa-scissors" },
+            { name: "Slice Text", description: "Quickly extract a slice from text. (From 10 to 50)", func: (text) => text.slice(10, 50), icon: "fas fa-sliders-h" },
+            { name: "Trim Text", description: "Quickly trim left or right side of text.", func: (text) => text.trim(), icon: "fas fa-eraser" },
+            { name: "Left-pad Text", description: "Quickly pad the left side of text. (With spaces to 50 chars)", func: (text) => text.padStart(50), icon: "fas fa-align-left" },
+            { name: "Right-pad Text", description: "Quickly pad the right side of text. (With spaces to 50 chars)", func: (text) => text.padEnd(50), icon: "fas fa-align-right" },
+            { name: "Left-align Text", description: "Quickly align text to the left side. (Already left by default)", func: (text) => text, icon: "fas fa-align-left" },
+            { name: "Right-align Text", description: "Quickly align text to the right side. (Pads lines to 50 chars)", func: (text) => text.split('\n').map(line => line.padStart(50)).join('\n'), icon: "fas fa-align-right" },
+            { name: "Center Text", description: "Quickly center text. (Pads lines to 50 chars)", func: (text) => text.split('\n').map(line => line.padStart((50 - line.length)/2 + line.length).padEnd(50)).join('\n'), icon: "fas fa-align-center" },
+            { name: "Indent Text", description: "Quickly add indentation to each text line. (4 spaces)", func: (text) => text.split('\n').map(line => '    ' + line).join('\n'), icon: "fas fa-indent" },
+            { name: "Unindent Text", description: "Quickly delete indentation from each text line.", func: (text) => text.split('\n').map(line => line.trimStart()).join('\n'), icon: "fas fa-outdent" },
+            { name: "Justify Text", description: "Quickly stretch spaces between words to make all text lines equal length. (To 50 chars)", func: (text) => text.split('\n').map(line => {
+                const words = line.split(/\s+/); let spaces = 50 - words.join('').length; const gaps = words.length - 1; return words.join(' '.repeat(Math.floor(spaces/gaps))) + ' '.repeat(spaces % gaps); }).join('\n'), icon: "fas fa-align-justify" },
+            { name: "Wrap Words in Text", description: "Quickly wrap words in text to a specified length. (To 50 chars)", func: (text) => text.match(/(.{1,50}\s|.{50})/g).join('\n'), icon: "fas fa-paragraph" },
+            { name: "Reverse Words in Text", description: "Quickly reverse every word in the given text.", func: (text) => text.split(/\s+/).map(word => word.split('').reverse().join('')).join(' '), icon: "fas fa-backward" },
+            { name: "Reverse Sentences in Text", description: "Quickly reverse every sentence in the given text.", func: (text) => text.split('. ').map(sentence => sentence.split(' ').reverse().join(' ')).join('. '), icon: "fas fa-backward" },
+            { name: "Reverse Paragraphs in Text", description: "Quickly reverse every paragraph in the given text.", func: (text) => text.split('\n\n').reverse().join('\n\n'), icon: "fas fa-backward" },
+            { name: "Swap Letters in Words", description: "Quickly swap pairs of adjacent letters in words.", func: (text) => text.split(/\s+/).map(word => word.replace(/(.)(.)/g, '$2$1')).join(' '), icon: "fas fa-exchange-alt" },
+            { name: "Swap Words in Text", description: "Quickly swap pairs of adjacent words in text.", func: (text) => { const words = text.split(/\s+/); for (let i = 0; i < words.length - 1; i += 2) { [words[i], words[i+1] ] = [words[i+1], words[i]]; } return words.join(' '); }, icon: "fas fa-exchange-alt" },
+            { name: "Duplicate Words in Text", description: "Quickly make every word to be two words in the given text.", func: (text) => text.split(/\s+/).map(word => word + ' ' + word).join(' '), icon: "fas fa-copy" },
+            { name: "Remove Words from Text", description: "Quickly delete certain words from the given text. (Removes 'the')", func: (text) => text.replace(/\bthe\b/g, ''), icon: "fas fa-trash" },
+            { name: "Duplicate Sentences in Text", description: "Quickly make every sentence to be two sentences in the text.", func: (text) => text.replace(/([^\.]+)\./g, '$1. $1.'), icon: "fas fa-copy" },
+            { name: "Remove Sentences from Text", description: "Quickly delete certain sentences from the given text. (Removes every second)", func: (text) => text.split('. ').filter((s, i) => i % 2 === 0).join('. '), icon: "fas fa-trash" },
+            { name: "Replace Words in Text", description: "Quickly substitute certain words in text with other words. (Replace 'text' with 'words')", func: (text) => text.replace(/text/g, 'words'), icon: "fas fa-sync" },
+            { name: "Add Random Words to Text", description: "Quickly insert random words in random positions in text. (Adds 'random')", func: (text) => text.split(/\s+/).map(word => Math.random() > 0.5 ? word + ' random' : word).join(' '), icon: "fas fa-random" },
+            { name: "Add Random Letters to Words", description: "Quickly insert random letters in words in text. (Adds 'x')", func: (text) => text.split(/\s+/).map(word => word + (Math.random() > 0.5 ? 'x' : '')).join(' '), icon: "fas fa-random" },
+            { name: "Introduce Errors in Text", description: "Quickly randomly change letters in text and make mistakes. (Swaps random letters)", func: (text) => text.split('').map(char => Math.random() > 0.9 ? String.fromCharCode(char.charCodeAt(0) + 1) : char).join(''), icon: "fas fa-bug" },
+            { name: "Generate Fake Text", description: "Quickly create fake text using similar-looking characters. (Replaces 'a' with 'а')", func: (text) => text.replace(/a/g, 'а'), icon: "fas fa-mask" },
+            { name: "Unfake Text", description: "Quickly convert fake text containing fake characters to regular text. (Replaces 'а' with 'a')", func: (text) => text.replace(/а/g, 'a'), icon: "fas fa-eraser" },
+            { name: "Check if Text is Fake", description: "Quickly check if the given text is forged (contains homoglyphes). (Checks for 'а')", func: (text) => text.includes('а') ? 'Fake' : 'Not Fake', icon: "fas fa-search" },
+            { name: "Remove Random Letters from Words", description: "Quickly delete random letters from words in text.", func: (text) => text.split(/\s+/).map(word => word.split('').filter(() => Math.random() > 0.2).join('')).join(' '), icon: "fas fa-trash" },
+            { name: "Remove Random Symbols from Text", description: "Quickly delete random symbols from text.", func: (text) => text.replace(/[^a-zA-Z0-9\s]/g, () => Math.random() > 0.5 ? '' : ''), icon: "fas fa-trash" },
+            { name: "Add Symbols Around Words", description: "Quickly add patterns before and after each word in text. (Adds '*')", func: (text) => text.split(/\s+/).map(word => '*' + word + '*').join(' '), icon: "fas fa-plus-circle" },
+            { name: "Remove Symbols from Around Words", description: "Quickly remove symbols from around words in text. (Removes '*')", func: (text) => text.replace(/\*/g, ''), icon: "fas fa-trash" },
+            { name: "Add a Prefix to Text Lines", description: "Quickly prepend a prefix to one or more text lines. (Adds 'pre-')", func: (text) => text.split('\n').map(line => 'pre-' + line).join('\n'), icon: "fas fa-plus" },
+            { name: "Add a Suffix to Text Lines", description: "Quickly append a suffix to one or more text lines. (Adds '-suf')", func: (text) => text.split('\n').map(line => line + '-suf').join('\n'), icon: "fas fa-plus" },
+            { name: "Remove a Prefix from Text", description: "Quickly remove a prefix from one or more text lines. (Removes 'pre-')", func: (text) => text.split('\n').map(line => line.replace(/^pre-/, '')).join('\n'), icon: "fas fa-trash" },
+            { name: "Remove a Suffix from Text Lines", description: "Quickly remove a suffix from one or more text lines. (Removes '-suf')", func: (text) => text.split('\n').map(line => line.replace(/-suf$/, '')).join('\n'), icon: "fas fa-trash" },
+            { name: "Add a Prefix to Words", description: "Quickly prepend a prefix to all words in text. (Adds 'pre-')", func: (text) => text.split(/\s+/).map(word => 'pre-' + word).join(' '), icon: "fas fa-plus" },
+            { name: "Add a Suffix to Words", description: "Quickly append a suffix to all words in text. (Adds '-suf')", func: (text) => text.split(/\s+/).map(word => word + '-suf').join(' '), icon: "fas fa-plus" },
+            { name: "Remove a Prefix from Words", description: "Quickly remove any prefix from all words in text. (Removes 'pre-')", func: (text) => text.split(/\s+/).map(word => word.replace(/^pre-/, '')).join(' '), icon: "fas fa-trash" },
+            { name: "Remove a Suffix from Words", description: "Quickly remove any suffix from the end of all words in text. (Removes '-suf')", func: (text) => text.split(/\s+/).map(word => word.replace(/-suf$/, '')).join(' '), icon: "fas fa-trash" },
+            { name: "Insert Symbols Between Letters", description: "Quickly insert characters between all letters of all words in text. (Inserts '-')", func: (text) => text.split('').join('-'), icon: "fas fa-plus-circle" },
+            { name: "Add Symbols Around Letters", description: "Quickly surround each letter of the text with decorative symbols. (With '[]')", func: (text) => text.split('').map(char => '[' + char + ']').join(''), icon: "fas fa-plus-circle" },
+            { name: "Remove All Empty Lines", description: "Quickly delete all blank lines from text.", func: (text) => text.split('\n').filter(line => line.trim() !== '').join('\n'), icon: "fas fa-trash" },
+            { name: "Remove All Duplicate Lines", description: "Quickly delete all repeated lines from text.", func: (text) => [...new Set(text.split('\n'))].join('\n'), icon: "fas fa-trash" },
+            { name: "Filter Text Lines", description: "Quickly return text lines that match a pattern or a regex. (Lines with 'a')", func: (text) => text.split('\n').filter(line => line.includes('a')).join('\n'), icon: "fas fa-filter" },
+            { name: "Filter Words in Text", description: "Quickly return words in text that match a pattern or a regex. (Words with 'a')", func: (text) => text.split(/\s+/).filter(word => word.includes('a')).join(' '), icon: "fas fa-filter" },
+            { name: "Filter Text Sentences", description: "Quickly return all sentences that match a pattern or a regex. (With 'a')", func: (text) => text.split('. ').filter(sentence => sentence.includes('a')).join('. '), icon: "fas fa-filter" },
+            { name: "Filter Text Paragraphs", description: "Quickly return all paragraphs that match a pattern or a regex. (With 'a')", func: (text) => text.split('\n\n').filter(para => para.includes('a')).join('\n\n'), icon: "fas fa-filter" },
+            { name: "Sort Text Lines", description: "Quickly sort lines alphabetically, numerically, or by their length. (Alphabetically)", func: (text) => text.split('\n').sort().join('\n'), icon: "fas fa-sort" },
+            { name: "Sort Sentences in Text", description: "Quickly sort sentences alphabetically, numerically, or by their length. (Alphabetically)", func: (text) => text.split('. ').sort().join('. '), icon: "fas fa-sort" },
+            { name: "Sort Paragraphs in Text", description: "Quickly sort paragraphs alphabetically, numerically, or by their length. (Alphabetically)", func: (text) => text.split('\n\n').sort().join('\n\n'), icon: "fas fa-sort" },
+            { name: "Sort Words in Text", description: "Quickly sort words alphabetically, numerically, or by their length. (Alphabetically)", func: (text) => text.split(/\s+/).sort().join(' '), icon: "fas fa-sort" },
+            { name: "Sort Letters in Words", description: "Quickly sort all letters in all words in any text.", func: (text) => text.split(/\s+/).map(word => word.split('').sort().join('')).join(' '), icon: "fas fa-sort" },
+            { name: "Sort Symbols in Text", description: "Quickly sort all symbols in text alphabetically.", func: (text) => text.replace(/[a-zA-Z0-9\s]/g, '').split('').sort().join(''), icon: "fas fa-sort" },
+            { name: "Randomize Letters in Text", description: "Quickly randomize the order of letters in text.", func: (text) => text.split('').sort(() => Math.random() - 0.5).join(''), icon: "fas fa-random" },
+            { name: "Scramble Words", description: "Quickly make all words in text barely readable. (Scrambles middle letters)", func: (text) => text.split(/\s+/).map(word => word[0] + word.slice(1, -1).split('').sort(() => Math.random() - 0.5).join('') + word[word.length-1]).join(' '), icon: "fas fa-random" },
+            { name: "Randomize Words in Text", description: "Quickly randomize the order of words in text.", func: (text) => text.split(/\s+/).sort(() => Math.random() - 0.5).join(' '), icon: "fas fa-random" },
+            { name: "Randomize Text Lines", description: "Quickly randomize the order of lines in text.", func: (text) => text.split('\n').sort(() => Math.random() - 0.5).join('\n'), icon: "fas fa-random" },
+            { name: "Randomize Text Sentences", description: "Quickly randomize the order of sentences in text.", func: (text) => text.split('. ').sort(() => Math.random() - 0.5).join('. '), icon: "fas fa-random" },
+            { name: "Randomize Text Paragraphs", description: "Quickly randomize the order of paragraphs in text.", func: (text) => text.split('\n\n').sort(() => Math.random() - 0.5).join('\n\n'), icon: "fas fa-random" },
+            { name: "Calculate Letter Sum", description: "Quickly calculate the sum of letters as if they were numbers. (a=1, b=2, etc.)", func: (text) => text.toLowerCase().replace(/[^a-z]/g, '').split('').reduce((sum, char) => sum + (char.charCodeAt(0) - 96), 0), icon: "fas fa-calculator" },
+            { name: "Unwrap Text Lines", description: "Quickly remove line breaks and get a continuous text.", func: (text) => text.replace(/\n/g, ' '), icon: "fas fa-compress" },
+            { name: "Extract a Text Fragment", description: "Quickly extract a text snippet of the given length. (First 50 chars)", func: (text) => text.slice(0, 50), icon: "fas fa-search" },
+            { name: "Find and Replace Text", description: "Quickly find and replace text patterns. (Replace 'find' with 'replace')", func: (text) => text.replace(/find/g, 'replace'), icon: "fas fa-search-plus" },
+            { name: "Find the Length of Text", description: "Quickly count the number of characters in text.", func: (text) => `Length: ${text.length}`, icon: "fas fa-ruler" },
+            { name: "Find Top Letters in Text", description: "Quickly find the most popular letters in the given text.", func: (text) => {
+                const counts = {}; text.toLowerCase().replace(/[^a-z]/g, '').split('').forEach(char => counts[char] = (counts[char] || 0) + 1); return Object.entries(counts).sort((a,b) => b[1] - a[1]).map(([char, count]) => `${char}: ${count}`).join('\n'); }, icon: "fas fa-star" },
+            { name: "Find Top Words in Text", description: "Quickly find the most popular words in the given text.", func: (text) => {
+                const counts = {}; text.toLowerCase().split(/\s+/).forEach(word => counts[word] = (counts[word] || 0) + 1); return Object.entries(counts).sort((a,b) => b[1] - a[1]).map(([word, count]) => `${word}: ${count}`).join('\n'); }, icon: "fas fa-star" },
+            { name: "Calculate Text Entropy", description: "Quickly calculate the Shannon entropy of any text.", func: (text) => {
+                const counts = {}; const len = text.length; text.split('').forEach(char => counts[char] = (counts[char] || 0) + 1); return -Object.values(counts).reduce((ent, count) => ent + (count/len) * Math.log2(count/len), 0).toFixed(2); }, icon: "fas fa-calculator" },
+            { name: "Count Words in Text", description: "Quickly find the number of words in text.", func: (text) => `Word count: ${text.split(/\s+/).length}`, icon: "fas fa-calculator" },
+            { name: "Print Text Statistics", description: "Quickly analyze text and print its statistical information.", func: (text) => `Chars: ${text.length}\nWords: ${text.split(/\s+/).length}\nLines: ${text.split('\n').length}`, icon: "fas fa-info-circle" },
+            { name: "Find Unique Words in Text", description: "Quickly find and print all unique words in text.", func: (text) => [...new Set(text.split(/\s+/))].join(' '), icon: "fas fa-search" },
+            { name: "Find Duplicate Words in Text", description: "Quickly find and print all repeated words in text.", func: (text) => {
+                const counts = {}; text.split(/\s+/).forEach(word => counts[word] = (counts[word] || 0) + 1); return Object.entries(counts).filter(([w, c]) => c > 1).map(([w, c]) => w).join(' '); }, icon: "fas fa-copy" },
+            { name: "Find Unique Letters in Text", description: "Quickly find and print all unique letters in text.", func: (text) => [...new Set(text.replace(/[^a-zA-Z]/g, ''))].join(' '), icon: "fas fa-font" },
+            { name: "Find Duplicate Letters in Text", description: "Quickly find and print all repeated letters in text.", func: (text) => {
+                const counts = {}; text.replace(/[^a-zA-Z]/g, '').split('').forEach(char => counts[char] = (counts[char] || 0) + 1); return Object.entries(counts).filter(([c, count]) => count > 1).map(([c]) => c).join(' '); }, icon: "fas fa-copy" },
+            { name: "Remove Duplicate Words from Text", description: "Quickly delete all repeated words in text.", func: (text) => [...new Set(text.split(/\s+/))].join(' '), icon: "fas fa-trash" },
+            { name: "Count Text Lines", description: "Quickly find the number of lines in text.", func: (text) => `Line count: ${text.split('\n').length}`, icon: "fas fa-list" },
+            { name: "Add Line Numbers", description: "Quickly add a number before every text line.", func: (text) => text.split('\n').map((line, i) => `${i+1}. ${line}`).join('\n'), icon: "fas fa-list-ol" },
+            { name: "Remove Line Numbers", description: "Quickly remove line numbering in text.", func: (text) => text.replace(/^\d+\.\s/g, ''), icon: "fas fa-eraser" },
+            { name: "Create an Image from Text", description: "Quickly create an image from text. (Base64 PNG)", func: (text) => { const canvas = document.createElement('canvas'); canvas.width = 200; canvas.height = 50; const ctx = canvas.getContext('2d'); ctx.fillText(text, 10, 25); return canvas.toDataURL(); }, icon: "fas fa-image" },
+            { name: "Change Text Font", description: "Quickly write the given text in a different font. (To uppercase)", func: (text) => text.toUpperCase(), icon: "fas fa-font" },
+            { name: "Remove Fancy Text Font", description: "Quickly remove all fancy fonts and styling from text.", func: (text) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, ''), icon: "fas fa-eraser" },
+            { name: "Write Text in Superscript", description: "Quickly use superscript characters to write text.", func: (text) => text.split('').map(char => '⁰¹²³⁴⁵⁶⁷⁸⁹' [parseInt(char)] || char).join(''), icon: "fas fa-superscript" },
+            { name: "Write Text in Subscript", description: "Quickly use subscript characters to write text.", func: (text) => text.split('').map(char => '₀₁₂₃₄₅₆₇₈₉' [parseInt(char)] || char).join(''), icon: "fas fa-subscript" },
+            { name: "Generate Tiny Text", description: "Quickly use tiny characters to write text.", func: (text) => text.toLowerCase().split('').map(char => 'ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖᵠʳˢᵗᵘᵛʷˣʸᶻ' [char.charCodeAt(0) - 97] || char).join(''), icon: "fas fa-text-height" },
+            { name: "Write Text in Bold", description: "Quickly use bold characters to write text.", func: (text) => text.split('').map(char => String.fromCharCode(char.charCodeAt(0) + 120276)).join(''), icon: "fas fa-bold" },
+            { name: "Write Text in Italic", description: "Quickly use italic characters to write text.", func: (text) => text.split('').map(char => String.fromCharCode(char.charCodeAt(0) + 120302)).join(''), icon: "fas fa-italic" },
+            { name: "Write Text in Cursive", description: "Quickly use cursive script to write text characters.", func: (text) => text.split('').map(char => String.fromCharCode(char.charCodeAt(0) + 120354)).join(''), icon: "fas fa-pen-fancy" },
+            { name: "Add an Underline to Text", description: "Quickly add an underline below all letters and words in text.", func: (text) => text.split('').join('̲'), icon: "fas fa-underline" },
+            { name: "Add a Strikethrough to Text", description: "Quickly add a strikethrough to all letters in text.", func: (text) => text.split('').join('̶'), icon: "fas fa-strikethrough" },
+            { name: "Generate Zalgo Text", description: "Quickly apply the Zalgo effect to the input text.", func: (text) => text.split('').map(char => char + '̾ͨͩͪ̽͛'.repeat(Math.floor(Math.random() * 3))).join(''), icon: "fas fa-ghost" },
+            { name: "Undo Zalgo Effect", description: "Quickly remove the Zalgo effect from the input text.", func: (text) => text.replace(/[\u0300-\u036f]/g, ''), icon: "fas fa-eraser" },
+            { name: "Create a Palindrome", description: "Quickly construct a palindrome from plain text.", func: (text) => text + text.split('').reverse().join(''), icon: "fas fa-sync" },
+            { name: "Check if Text is a Palindrome", description: "Quickly test if text is a palindrome.", func: (text) => text === text.split('').reverse().join('') ? 'Yes' : 'No', icon: "fas fa-check" },
+            { name: "Change Text Case", description: "Quickly switch between various letter cases in text. (To lowercase)", func: (text) => text.toLowerCase(), icon: "fas fa-exchange-alt" },
+            { name: "Convert Text to Uppercase", description: "Quickly convert text letters to uppercase.", func: (text) => text.toUpperCase(), icon: "fas fa-arrow-up" },
+            { name: "Convert Text to Lowercase", description: "Quickly convert text letters to lowercase.", func: (text) => text.toLowerCase(), icon: "fas fa-arrow-down" },
+            { name: "Convert Text to Title Case", description: "Quickly convert all words in text to title case.", func: (text) => text.split(/\s+/).map(word => word[0].toUpperCase() + word.slice(1).toLowerCase()).join(' '), icon: "fas fa-heading" },
+            { name: "Convert Text to Proper Case", description: "Quickly capitalize the first letter of every word in text.", func: (text) => text.split(/\s+/).map(word => word[0].toUpperCase() + word.slice(1)).join(' '), icon: "fas fa-heading" },
+            { name: "Randomize Text Case", description: "Quickly randomize character case in text.", func: (text) => text.split('').map(char => Math.random() > 0.5 ? char.toUpperCase() : char.toLowerCase()).join(''), icon: "fas fa-random" },
+            { name: "Invert Text Case", description: "Quickly invert character case in text.", func: (text) => text.split('').map(char => char === char.toUpperCase() ? char.toLowerCase() : char.toUpperCase()).join(''), icon: "fas fa-sync" },
+            { name: "Add Line Breaks to Text", description: "Quickly add newlines to paragraphs, lines, sentences, and words. (After every 10 chars)", func: (text) => text.match(/.{1,10}/g).join('\n'), icon: "fas fa-paragraph" },
+            { name: "Remove Line Breaks from Text", description: "Quickly remove newlines between text lines and paragraphs.", func: (text) => text.replace(/\n/g, ' '), icon: "fas fa-compress" },
+            { name: "Replace Line Breaks in Text", description: "Quickly replace all line breaks in text with a new character. (With ';')", func: (text) => text.replace(/\n/g, ';'), icon: "fas fa-sync" },
+            { name: "Randomize Line Breaks in Text", description: "Quickly randomize line break count between lines and paragraphs.", func: (text) => text.replace(/\n/g, '\n'.repeat(Math.floor(Math.random() * 3 + 1))), icon: "fas fa-random" },
+            { name: "Normalize Line Breaks in Text", description: "Quickly normalize line break count between lines and paragraphs. (Single newline)", func: (text) => text.replace(/\n+/g, '\n'), icon: "fas fa-sync" },
+            { name: "Fix Distance Between Lines and Paragraphs", description: "Quickly adjust the line break distance in text. (Double newline for paragraphs)", func: (text) => text.replace(/\n/g, '\n\n'), icon: "fas fa-sync" },
+            { name: "Fancify Line Breaks in Text", description: "Quickly add a fancy symbol at the end of each line and paragraph. (With '•')", func: (text) => text.split('\n').map(line => line + '•').join('\n'), icon: "fas fa-sparkles" },
+            { name: "Convert Spaces to Newlines", description: "Quickly replace spaces with newlines in text.", func: (text) => text.replace(/ /g, '\n'), icon: "fas fa-exchange-alt" },
+            { name: "Convert Newlines to Spaces", description: "Quickly replace newlines with spaces in text.", func: (text) => text.replace(/\n/g, ' '), icon: "fas fa-exchange-alt" },
+            { name: "Convert Spaces to Tabs", description: "Quickly get tabs instead of spaces in text.", func: (text) => text.replace(/ /g, '\t'), icon: "fas fa-exchange-alt" },
+            { name: "Convert Tabs to Spaces", description: "Quickly get spaces instead of tabs in text.", func: (text) => text.replace(/\t/g, '  '), icon: "fas fa-exchange-alt" },
+            { name: "Convert Comma to Newline", description: "Quickly replace all commas with newlines in text.", func: (text) => text.replace(/,/g, '\n'), icon: "fas fa-exchange-alt" },
+            { name: "Convert Newline to Comma", description: "Quickly replace all newlines with commas in text.", func: (text) => text.replace(/\n/g, ','), icon: "fas fa-exchange-alt" },
+            { name: "Convert Column to Comma", description: "Quickly convert a column of text to a comma-separated text. (Assume lines are column)", func: (text) => text.split('\n').join(', '), icon: "fas fa-exchange-alt" },
+            { name: "Convert Comma to Column", description: "Quickly convert a comma-separated text to a column of text.", func: (text) => text.replace(/,/g, '\n'), icon: "fas fa-exchange-alt" },
+            { name: "Convert Commas to Spaces", description: "Quickly replace commas with spaces in text.", func: (text) => text.replace(/,/g, ' '), icon: "fas fa-exchange-alt" },
+            { name: "Convert Spaces to Commas", description: "Quickly replace spaces with commas between words.", func: (text) => text.replace(/ /g, ','), icon: "fas fa-exchange-alt" },
+            { name: "Replace Commas in Text", description: "Quickly replace all commas in text with a new character. (With ';')", func: (text) => text.replace(/,/g, ';'), icon: "fas fa-sync" },
+            { name: "Remove Repeated Spaces", description: "Quickly remove repeated spaces between words in text.", func: (text) => text.replace(/\s+/g, ' '), icon: "fas fa-trash" },
+            { name: "Normalize Text Spacing", description: "Quickly change the number of spaces between words. (Single space)", func: (text) => text.replace(/\s+/g, ' '), icon: "fas fa-sync" },
+            { name: "Randomize Text Spacing", description: "Quickly mess up the spacing between words in any text.", func: (text) => text.split(/\s+/).join(' '.repeat(Math.floor(Math.random() * 5 + 1))), icon: "fas fa-random" },
+            { name: "Replace Spaces in Text", description: "Quickly replace whitespace characters with other characters. (With '-')", func: (text) => text.replace(/\s/g, '-'), icon: "fas fa-sync" },
+            { name: "Remove All Whitespace", description: "Quickly clear text from spaces, tabs, and newlines.", func: (text) => text.replace(/\s/g, ''), icon: "fas fa-trash" },
+            { name: "Remove All Punctuation", description: "Quickly clear text from dots, commas, and similar characters.", func: (text) => text.replace(/[^\w\s]/g, ''), icon: "fas fa-trash" },
+            { name: "Remove Diacritics from Text", description: "Quickly remove accent marks from all characters in text.", func: (text) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, ''), icon: "fas fa-trash" },
+            { name: "Increment Letters in Text", description: "Quickly replace each letter in text with the next alphabet letter.", func: (text) => text.split('').map(char => String.fromCharCode(char.charCodeAt(0) + 1)).join(''), icon: "fas fa-plus" },
+            { name: "Decrement Letters in Text", description: "Quickly replace each letter in text with the previous alphabet letter.", func: (text) => text.split('').map(char => String.fromCharCode(char.charCodeAt(0) - 1)).join(''), icon: "fas fa-minus" },
+            { name: "Add Quotes to Text", description: "Quickly wrap text in quotes.", func: (text) => `"${text}"`, icon: "fas fa-quote-left" },
+            { name: "Remove Quotes from Text", description: "Quickly delete quotes surrounding text.", func: (text) => text.replace(/["']/g, ''), icon: "fas fa-trash" },
+            { name: "Add Quotes to Words", description: "Quickly surround all words in pairs of single or double quotes.", func: (text) => text.split(/\s+/).map(word => `"${word}"`).join(' '), icon: "fas fa-quote-left" },
+            { name: "Remove Quotes from Words", description: "Quickly delete quotes surrounding words in text.", func: (text) => text.replace(/["']/g, ''), icon: "fas fa-trash" },
+            { name: "Add Quotes to Lines", description: "Quickly enclose text lines in quotation marks.", func: (text) => text.split('\n').map(line => `"${line}"`).join('\n'), icon: "fas fa-quote-left" },
+            { name: "Remove Quotes from Lines", description: "Quickly delete quotes that enclose lines of text.", func: (text) => text.split('\n').map(line => line.replace(/["']/g, '')).join('\n'), icon: "fas fa-trash" },
+            { name: "Add Curse Words To Text", description: "Quickly randomly insert swear words here and there in text. (Adds 'damn')", func: (text) => text.split(/\s+/).map(word => Math.random() > 0.8 ? word + ' damn' : word).join(' '), icon: "fas fa-exclamation-triangle" },
+            { name: "Censor Words in Text", description: "Quickly mask bad words or replace them with alternative words. (With '***')", func: (text) => text.replace(/\bdamn\b/g, '***'), icon: "fas fa-ban" },
+            { name: "Anonymize Text", description: "Quickly hide information in text so it can't be read. (Replaces letters with '*')", func: (text) => text.replace(/[a-zA-Z]/g, '*'), icon: "fas fa-mask" },
+            { name: "Extract Text from HTML", description: "Quickly extract tag content from HTML code.", func: (text) => text.replace(/<[^>]*>/g, ''), icon: "fas fa-code" },
+            { name: "Extract Text from XML", description: "Quickly extract tag content from an XML document.", func: (text) => text.replace(/<[^>]*>/g, ''), icon: "fas fa-code" },
+            { name: "Extract Text from BBCode", description: "Quickly extract all textual data from BBCode markup.", func: (text) => text.replace(/\[[^\]]*\]/g, ''), icon: "fas fa-code" },
+            { name: "Extract Text from JSON", description: "Quickly extract keys and values from a JSON data structure.", func: (text) => JSON.stringify(JSON.parse(text), null, 2), icon: "fas fa-brackets-curly" },
+            { name: "JSON Stringify Text", description: "Quickly convert text to a JSON string.", func: (text) => JSON.stringify(text), icon: "fas fa-quote-left" },
+            { name: "JSON Unstringify Text", description: "Quickly convert previously JSON stringified text to plain text.", func: (text) => JSON.parse(text), icon: "fas fa-quote-right" },
+            { name: "Slash-escape Text", description: "Quickly escape special symbols in text with slashes.", func: (text) => text.replace(/([\\"'/])/g, '\\$1'), icon: "fas fa-backslash" },
+            { name: "Slash-unescape Text", description: "Quickly remove slashes from previously slash-escaped text.", func: (text) => text.replace(/\\(.)/g, '$1'), icon: "fas fa-eraser" },
+            { name: "ROT13 Text", description: "Quickly encode or decode text using ROT13 cipher algorithm.", func: (text) => text.replace(/[a-zA-Z]/g, char => String.fromCharCode(char.charCodeAt(0) + (char.toLowerCase() < 'n' ? 13 : -13))), icon: "fas fa-sync" },
+            { name: "ROT47 Text", description: "Quickly encode and decode text with ROT47 cipher algorithm.", func: (text) => text.replace(/[\x21-\x7E]/g, char => String.fromCharCode(33 + (char.charCodeAt(0) + 14) % 94)), icon: "fas fa-sync" },
+            { name: "Generate Text of Certain Length", description: "Quickly generate text that has a specific length. (Repeats to 100 chars)", func: (text) => text.repeat(Math.ceil(100 / text.length)).slice(0, 100), icon: "fas fa-ruler-horizontal" },
+            { name: "Generate Text from a RegExp", description: "Quickly create text that matches the given regexp. (Simple example)", func: (text) => text.match(/[a-z]+/g).join(' '), icon: "fas fa-search" },
+            { name: "Extract RegExp Matches from Text", description: "Quickly find and return all regexp matches. (Words)", func: (text) => text.match(/\b\w+\b/g).join('\n'), icon: "fas fa-search" },
+            { name: "Highlight RegExp Matches in Text", description: "Quickly highlight parts of text that match a regular expression. (Bold words)", func: (text) => text.replace(/(\b\w+\b)/g, '<b>$1</b>'), icon: "fas fa-highlighter" },
+            { name: "Test Text with a RegExp", description: "Quickly check whether text matches a regular expression. (Has digits?)", func: (text) => /\d/.test(text) ? 'Matches' : 'No match', icon: "fas fa-check-circle" },
+            { name: "Print Text", description: "Quickly format text using the printf or sprintf function. (Simple)", func: (text) => text, icon: "fas fa-print" },
+            { name: "Rotate Text", description: "Quickly cyclically rotate text letters to the right or left. (Right by 1)", func: (text) => text.slice(-1) + text.slice(0, -1), icon: "fas fa-sync" },
+            { name: "Flip Text Vertically", description: "Quickly rewrite text to vertical position. (One letter per line)", func: (text) => text.split('').join('\n'), icon: "fas fa-arrows-alt-v" },
+            { name: "Rewrite Text", description: "Quickly rewrite text using transformation rules. (To upper)", func: (text) => text.toUpperCase(), icon: "fas fa-edit" },
+            { name: "Change Text Alphabet", description: "Quickly replace letters in text from one alphabet to another. (To leet)", func: (text) => text.replace(/a/g, '4').replace(/e/g, '3').replace(/i/g, '1'), icon: "fas fa-font" },
+            { name: "Replace Letters in Text", description: "Quickly substitute certain letters or symbols in text with other letters. (a to b)", func: (text) => text.replace(/a/g, 'b'), icon: "fas fa-sync" },
+            { name: "Convert Letters to Digits", description: "Quickly convert individual letters in text to digits or numbers. (a=1, b=2)", func: (text) => text.toLowerCase().replace(/[a-z]/g, char => char.charCodeAt(0) - 96), icon: "fas fa-calculator" },
+            { name: "Convert Digits to Letters", description: "Quickly convert individual digits or numbers in text to letters. (1=a, 2=b)", func: (text) => text.replace(/\d/g, num => String.fromCharCode(parseInt(num) + 96)), icon: "fas fa-calculator" },
+            { name: "Replace Words with Digits", description: "Quickly replace certain words in text with digits or numbers. (one to 1)", func: (text) => text.replace(/\bone\b/g, '1'), icon: "fas fa-sync" },
+            { name: "Replace Digits with Words", description: "Quickly replace certain digits or numbers in text with words. (1 to one)", func: (text) => text.replace(/\b1\b/g, 'one'), icon: "fas fa-sync" },
+            { name: "Duplicate Letters in Text", description: "Quickly replace certain letters with two or more copies.", func: (text) => text.replace(/([a-zA-Z])/g, '$1$1'), icon: "fas fa-copy" },
+            { name: "Remove Letters from Text", description: "Quickly delete certain letters and symbols from text. (Remove vowels)", func: (text) => text.replace(/[aeiou]/gi, ''), icon: "fas fa-trash" },
+            { name: "Erase Letters from Words", description: "Quickly erase some letters from words and preserve the text structure. (Middle letter)", func: (text) => text.split(/\s+/).map(word => word[0] + ' ' + word[word.length-1]).join(' '), icon: "fas fa-eraser" },
+            { name: "Erase Words from Text", description: "Quickly erase some words from text and preserve the text structure. (Every second)", func: (text) => text.split(/\s+/).filter((w, i) => i % 2 === 0).join(' '), icon: "fas fa-eraser" },
+            { name: "Visualize Text Structure", description: "Quickly create an abstract drawing that shows the structure of the text. (Simple *)", func: (text) => text.replace(/./g, '*'), icon: "fas fa-eye" },
+            { name: "Highlight Letters in Text", description: "Quickly add highlighting to certain letters in text. (Bold 'a')", func: (text) => text.replace(/a/g, '<b>a</b>'), icon: "fas fa-highlighter" },
+            { name: "Highlight Words in Text", description: "Quickly add highlighting to certain words in text. (Bold 'word')", func: (text) => text.replace(/\bword\b/g, '<b>word</b>'), icon: "fas fa-highlighter" },
+            { name: "Highlight Patterns in Text", description: "Quickly add highlighting to certain patterns in text. (Bold digits)", func: (text) => text.replace(/\d/g, '<b>$&</b>'), icon: "fas fa-highlighter" },
+            { name: "Highlight Sentences in Text", description: "Quickly add highlighting to certain sentences in text. (Bold first)", func: (text) => text.split('. ').map((s, i) => i === 0 ? '<b>' + s + '</b>' : s).join('. '), icon: "fas fa-highlighter" },
+            { name: "Replace Vowels in Text", description: "Quickly substitute certain vowels in text with other characters. (To '*')", func: (text) => text.replace(/[aeiou]/gi, '*'), icon: "fas fa-sync" },
+            { name: "Duplicate Vowels in Text", description: "Quickly replace each vowel with two or more vowels in any text.", func: (text) => text.replace(/([aeiou])/gi, '$1$1'), icon: "fas fa-copy" },
+            { name: "Remove Vowels from Text", description: "Quickly delete all vowels from text.", func: (text) => text.replace(/[aeiou]/gi, ''), icon: "fas fa-trash" },
+            { name: "Replace Consonants in Text", description: "Quickly substitute certain consonants in text with other characters. (To '*')", func: (text) => text.replace(/[^aeiou\s]/gi, '*'), icon: "fas fa-sync" },
+            { name: "Duplicate Consonants in Text", description: "Quickly replace each consonant with two or more consonants in any text.", func: (text) => text.replace(/([^aeiou])/gi, '$1$1'), icon: "fas fa-copy" },
+            { name: "Remove Consonants from Text", description: "Quickly delete all consonants from text.", func: (text) => text.replace(/[^aeiou\s]/gi, ''), icon: "fas fa-trash" },
+            { name: "Convert Text to Nice Columns", description: "Quickly format text so that all words are in neat columns. (Tab separated)", func: (text) => text.split(/\s+/).join('\t'), icon: "fas fa-table" },
+            { name: "Convert Nice Columns to Text", description: "Quickly convert data aligned in columns to linear text. (From tabs)", func: (text) => text.replace(/\t/g, ' '), icon: "fas fa-table" },
+            { name: "Generate Text Unigrams", description: "Quickly create a list of all monograms from text.", func: (text) => text.split('').join('\n'), icon: "fas fa-list" },
+            { name: "Generate Text Bigrams", description: "Quickly create a list of all digrams from text.", func: (text) => { const bigrams = []; for (let i = 0; i < text.length - 1; i++) bigrams.push(text.slice(i, i+2)); return bigrams.join('\n'); }, icon: "fas fa-list" },
+            { name: "Generate Text N-grams", description: "Quickly create a list of all ngrams from text. (Trigrams)", func: (text) => { const ngrams = []; for (let i = 0; i < text.length - 2; i++) ngrams.push(text.slice(i, i+3)); return ngrams.join('\n'); }, icon: "fas fa-list" },
+            { name: "Generate Text Skip-grams", description: "Quickly create a list of all k-skip-n-grams. (1-skip bigrams)", func: (text) => { const skipgrams = []; for (let i = 0; i < text.length - 2; i++) skipgrams.push(text[i] + text[i+2]); return skipgrams.join('\n'); }, icon: "fas fa-list" },
+            { name: "Create ZigZag Text", description: "Quickly make letters in text go in a zigzag.", func: (text) => convertToZigZag(text.replace(/\s+/g, ''), 3), icon: "fas fa-wave-square" },
+            { name: "Draw a Box Around Text", description: "Quickly surround any text in a box. (Simple ASCII box)", func: (text) => '********\n*' + text.replace(/\n/g, '*\n*') + '*\n********', icon: "fas fa-square" },
+            { name: "Convert Text to Morse Code", description: "Quickly write the text in Morse code.", func: (text) => text.toLowerCase().split('').map(char => ({a: '.-', b: '-...', c: '-.-.'}[char] || char)).join(' '), icon: "fas fa-signal" },
+            { name: "Convert Morse Code to Text", description: "Quickly decode Morse code to plain text.", func: (text) => text.split(' ').map(code => ({'.-': 'a', '-...': 'b', '-.-.': 'c'}[code] || code)).join(''), icon: "fas fa-signal" },
+            { name: "Calculate Text Complexity", description: "Quickly calculate the complexity of the given text. (Word count)", func: (text) => `Complexity: ${text.split(/\s+/).length}`, icon: "fas fa-calculator" },
+            { name: "URL-encode Text", description: "Quickly URL-escape text.", func: (text) => encodeURIComponent(text), icon: "fas fa-link" },
+            { name: "URL-decode Text", description: "Quickly URL-unescape text.", func: (text) => decodeURIComponent(text), icon: "fas fa-link" },
+            { name: "HTML-encode Text", description: "Quickly convert all plain text characters to HTML entities.", func: (text) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'), icon: "fas fa-code" },
+            { name: "HTML-decode Text", description: "Quickly convert HTML entities to plain text.", func: (text) => text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"'), icon: "fas fa-code" },
+            { name: "Convert Text to URL Slug", description: "Quickly convert text to a user-friendly URL slug.", func: (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-'), icon: "fas fa-link" },
+            { name: "Base64-encode Text", description: "Quickly encode text to base64.", func: (text) => btoa(text), icon: "fas fa-lock" },
+            { name: "Base64-decode Text", description: "Quickly decode base64-encoded text.", func: (text) => atob(text), icon: "fas fa-unlock" },
+            { name: "Convert Text to Binary", description: "Quickly convert plain text to binary text.", func: (text) => text.split('').map(char => char.charCodeAt(0).toString(2)).join(' '), icon: "fas fa-binary" },
+            { name: "Convert Binary to Text", description: "Quickly convert binary text to plain text.", func: (text) => text.split(' ').map(bin => String.fromCharCode(parseInt(bin, 2))).join(''), icon: "fas fa-binary" },
+            { name: "Convert Text to Octal", description: "Quickly convert plain text to octal text.", func: (text) => text.split('').map(char => char.charCodeAt(0).toString(8)).join(' '), icon: "fas fa-calculator" },
+            { name: "Convert Octal to Text", description: "Quickly convert octal text to plain text.", func: (text) => text.split(' ').map(oct => String.fromCharCode(parseInt(oct, 8))).join(''), icon: "fas fa-calculator" },
+            { name: "Convert Text to Decimal", description: "Quickly convert text to decimal values.", func: (text) => text.split('').map(char => char.charCodeAt(0)).join(' '), icon: "fas fa-calculator" },
+            { name: "Convert Decimal to Text", description: "Quickly convert decimal values to text.", func: (text) => text.split(' ').map(dec => String.fromCharCode(parseInt(dec))).join(''), icon: "fas fa-calculator" },
+            { name: "Convert Text to Hex", description: "Quickly convert plain text to hexadecimal values.", func: (text) => text.split('').map(char => char.charCodeAt(0).toString(16)).join(' '), icon: "fas fa-calculator" },
+            { name: "Convert Hex to Text", description: "Quickly convert hexadecimal to readable text.", func: (text) => text.split(' ').map(hex => String.fromCharCode(parseInt(hex, 16))).join(''), icon: "fas fa-calculator" }
+        ];
+        document.addEventListener("DOMContentLoaded", () => {
+            const container = document.getElementById("tools-container");
+            tools.forEach(tool => {
+                const card = document.createElement("div");
+                card.classList.add("tool-card");
+                card.innerHTML = `
+                    <div class="tool-icon"><i class="${tool.icon}"></i></div>
+                    <div class="tool-info">
+                        <h3>${tool.name}</h3>
+                        <p>${tool.description}</p>
+                    </div>
+                `;
+                card.addEventListener("click", () => openModal(tool));
+                container.appendChild(card);
+            });
+        });
+        const modal = document.getElementById("tool-modal");
+        const close = document.getElementsByClassName("close")[0];
+        close.onclick = () => modal.style.display = "none";
+        window.onclick = (event) => { if (event.target === modal) modal.style.display = "none"; };
+        let currentTool;
+        function openModal(tool) {
+            currentTool = tool;
+            document.getElementById("tool-title").innerText = tool.name;
+            document.getElementById("tool-description").innerText = tool.description;
+            document.getElementById("input-text").value = '';
+            document.getElementById("output-text").value = "";
+            modal.style.display = "block";
+        }
+        document.getElementById("process-btn").onclick = () => {
+            const input = document.getElementById("input-text").value;
+            const output = currentTool.func(input);
+            document.getElementById("output-text").value = output;
+        };
+        function downloadFile(filename, content, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        document.getElementById("download-txt").onclick = () => {
+            const output = document.getElementById("output-text").value;
+            downloadFile("output.txt", output, "text/plain");
+        };
+        document.getElementById("download-pdf").onclick = () => {
+            const output = document.getElementById("output-text").value;
+            const pdfContent = `%PDF-1.3
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length ${output.length + 50} >>
+stream
+BT
+/F1 12 Tf
+72 800 Td
+(${output.replace(/\n/g, ') Tj\n72 780 Td\n(')}) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000010 00000 n 
+0000000079 00000 n 
+0000000173 00000 n 
+0000000456 00000 n 
+0000000567 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+678
+%%EOF`;
+            downloadFile("output.pdf", pdfContent, "application/pdf");
+        };
+        document.getElementById("download-excel").onclick = () => {
+            const output = document.getElementById("output-text").value;
+            const csvContent = output.replace(/\n/g, '\r\n');
+            downloadFile("output.csv", csvContent, "text/csv");
+        };
+        document.getElementById("download-word").onclick = () => {
+            const output = document.getElementById("output-text").value;
+            const docContent = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Document</title></head><body><p>${output.replace(/\n/g, '</p><p>')}</p></body></html>`;
+            downloadFile("output.doc", docContent, "application/msword");
+        };
+        const themeToggle = document.getElementById("theme-toggle");
+        themeToggle.onclick = () => {
+            document.body.classList.toggle("dark");
+            const icon = themeToggle.querySelector("i");
+            icon.classList.toggle("fa-moon");
+            icon.classList.toggle("fa-sun");
+        };
+    </script>
+</body>
+</html>
